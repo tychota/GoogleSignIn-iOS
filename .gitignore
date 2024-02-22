@@ -16,3 +16,6 @@ Credentials.xcconfig
 Pods/
 gen/
 Podfile.lock
+
+# Swift Build
+.build/
