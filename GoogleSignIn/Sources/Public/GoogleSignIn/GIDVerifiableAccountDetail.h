@@ -13,17 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+#import <Foundation/Foundation.h>
 #import <TargetConditionals.h>
 
-#import "GIDConfiguration.h"
-#import "GIDGoogleUser.h"
-#import "GIDProfileData.h"
-#import "GIDSignIn.h"
-#import "GIDToken.h"
-#import "GIDSignInResult.h"
-#import "GIDVerifiableAccountDetail.h"
-#import "GIDVerifyAccountDetail.h"
-#import "GIDVerifiedAccountDetailsResult.h"
-#if TARGET_OS_IOS || TARGET_OS_MACCATALYST
-#import "GIDSignInButton.h"
-#endif
+typedef NS_ENUM(NSInteger, GIDAccountDetailType) {
+    GIDAccountDetailTypeAgeOver18
+};
+
+
+@interface GIDVerifableAccountDetail : NSObject
+
+@property (nonatomic, assign) GIDAccountDetailType type;
+
+@end
