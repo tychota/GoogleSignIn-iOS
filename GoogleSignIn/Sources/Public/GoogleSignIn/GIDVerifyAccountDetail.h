@@ -19,10 +19,15 @@
 
 @class GIDVerifableAccountDetail;
 @class GIDVerifyAccountDetailsResult;
+@class GIDSignInInternalOptions;
+@class GIDConfiguration;
+@class UIViewController;
 
 NS_ASSUME_NONNULL_BEGIN
 
 @interface GIDVerifyAccountDetail : NSObject
+
+@property(nonatomic, nullable) GIDConfiguration *configuration;
 
 #if TARGET_OS_IOS || TARGET_OS_MACCATALYST
 
@@ -40,6 +45,8 @@ NS_ASSUME_NONNULL_BEGIN
                         hint:(nullable NSString *)hint
             additionalScopes:(nullable NSArray<NSString *> *)additionalScopes
                   completion:(nullable void (^)(GIDVerifyAccountDetailsResult *_Nullable verifyResult, NSError *_Nullable error))completion;
+
+- (void)verifyAccountDetailsInteractivelyWithOptions:(GIDSignInInternalOptions *)options;
 
 #endif
 

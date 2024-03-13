@@ -26,6 +26,7 @@
 
 @class GIDConfiguration;
 @class GIDSignInResult;
+@class GIDVerifiableAccountDetail;
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -40,6 +41,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 /// Whether the sign-in is an addScopes flow. NO means it is a sign in flow.
 @property(nonatomic, readonly) BOOL addScopesFlow;
+
+/// The user account details this flow will verify
+@property(nonatomic, copy, nullable, readonly) NSArray<GIDVerifiableAccountDetail *> *accountDetailsToVerify;
 
 /// The extra parameters used in the sign-in URL.
 @property(nonatomic, readonly, nullable) NSDictionary *extraParams;

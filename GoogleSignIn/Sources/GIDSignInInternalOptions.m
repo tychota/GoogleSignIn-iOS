@@ -25,6 +25,25 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @implementation GIDSignInInternalOptions
+// #if TARGET_OS_IOS || TARGET_OS_MACCATALYST
+// + (instancetype)defaultOptionsWithConfiguration:(nullable GIDConfiguration *)configuration
+//                        presentingViewController:(nullable UIViewController *)presentingViewController
+//                                       loginHint:(nullable NSString *)loginHint
+//                                   addScopesFlow:(BOOL)addScopesFlow
+//                                          scopes:(nullable NSArray *)scopes
+//                                      completion:(nullable GIDSignInCompletion)completion {
+//   GIDSignInInternalOptions *options = [[GIDSignInInternalOptions alloc] init];
+//   if (options) {
+//     options->_interactive = YES;
+//     options->_continuation = NO;
+//     options->_addScopesFlow = addScopesFlow;
+//     options->_configuration = configuration;
+//     options->_presentingViewController = presentingViewController;
+//     options->
+//   }
+// }
+// #endif // TARGET_OS_IOS || TARGET_OS_
+
 #if TARGET_OS_IOS || TARGET_OS_MACCATALYST
 + (instancetype)defaultOptionsWithConfiguration:(nullable GIDConfiguration *)configuration
                        presentingViewController:(nullable UIViewController *)presentingViewController
