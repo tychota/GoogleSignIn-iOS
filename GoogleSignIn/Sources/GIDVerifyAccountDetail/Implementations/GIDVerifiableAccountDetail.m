@@ -17,4 +17,13 @@
 #import "GoogleSignIn/Sources/Public/GoogleSignIn/GIDVerifiableAccountDetail.h"
 
 @implementation GIDVerifiableAccountDetail
+
+- (instancetype)initWithAccountDetailType:(GIDAccountDetailType)accountDetailType {
+    self = [super init];
+    if (self) {
+        _accountDetailType = accountDetailType;
+    }
+    return self;
+}
+
 @end
