@@ -30,6 +30,49 @@ NS_ASSUME_NONNULL_BEGIN
                        presentingViewController:(nullable UIViewController *)presentingViewController
                                       loginHint:(nullable NSString *)loginHint
                                   addScopesFlow:(BOOL)addScopesFlow
+                         accountDetailsToVerify:(nullable NSArray<GIDVerifiableAccountDetail *> *)accountDetailsToVerify
+                                     completion:(nullable GIDVerifyCompletion)completion {
+GIDSignInInternalOptions *options = [self defaultOptionsWithConfiguration:configuration
+                                      presentingViewController:presentingViewController
+                                      loginHint:loginHint
+                                  addScopesFlow:addScopesFlow
+                                      scopes:@[]
+                                      accountDetailsToVerify:accountDetailsToVerify
+                                     completion:completion];
+
+  return options;
+}
+
++ (instancetype)defaultOptionsWithConfiguration:(nullable GIDConfiguration *)configuration
+                       presentingViewController:(nullable UIViewController *)presentingViewController
+                                      loginHint:(nullable NSString *)loginHint
+                                  addScopesFlow:(BOOL)addScopesFlow
+                                         scopes:(nullable NSArray *)scopes
+                         accountDetailsToVerify:(nullable NSArray<GIDVerifiableAccountDetail *> *)accountDetailsToVerify
+                                     completion:(nullable GIDVerifyCompletion)completion {
+GIDSignInInternalOptions *options = [[GIDSignInInternalOptions alloc] init];
+  if (options) {
+      options->_interactive = YES;
+      options->_continuation = NO;
+      options->_addScopesFlow = addScopesFlow;
+      options->_configuration = configuration;
+      options->_accountDetailsToVerify = accountDetailsToVerify;
+      #if TARGET_OS_IOS || TARGET_OS_MACCATALYST
+          options->_presentingViewController = presentingViewController;
+      #endif // TARGET_OS_IOS || TARGET_OS_MACCATALYST
+      options->_loginHint = loginHint;
+      options->_verifyCompletion = completion;
+      options->_scopes = [GIDScopes scopesWithBasicProfile:scopes];
+  }
+  return options;
+}
+#endif // TARGET_OS_IOS || TARGET_OS_MACCATALYST
+
+#if TARGET_OS_IOS || TARGET_OS_MACCATALYST
++ (instancetype)defaultOptionsWithConfiguration:(nullable GIDConfiguration *)configuration
+                       presentingViewController:(nullable UIViewController *)presentingViewController
+                                      loginHint:(nullable NSString *)loginHint
+                                  addScopesFlow:(BOOL)addScopesFlow
                                          scopes:(nullable NSArray *)scopes
                                      completion:(nullable GIDSignInCompletion)completion {
 #elif TARGET_OS_OSX

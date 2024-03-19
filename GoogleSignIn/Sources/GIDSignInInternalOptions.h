@@ -26,6 +26,8 @@
 
 @class GIDConfiguration;
 @class GIDSignInResult;
+@class GIDVerifiableAccountDetail;
+@class GIDVerifiedAccountDetailResult;
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -41,6 +43,9 @@ NS_ASSUME_NONNULL_BEGIN
 /// Whether the sign-in is an addScopes flow. NO means it is a sign in flow.
 @property(nonatomic, readonly) BOOL addScopesFlow;
 
+/// The user account details this flow will verify
+@property(nonatomic, copy, nullable, readonly) NSArray<GIDVerifiableAccountDetail *> *accountDetailsToVerify;
+
 /// The extra parameters used in the sign-in URL.
 @property(nonatomic, readonly, nullable) NSDictionary *extraParams;
 
@@ -55,8 +60,11 @@ NS_ASSUME_NONNULL_BEGIN
 @property(nonatomic, readonly, weak, nullable) NSWindow *presentingWindow;
 #endif // TARGET_OS_IOS || TARGET_OS_MACCATALYST
 
-/// The completion block to be called at the completion of the flow.
+/// The completion block to be called at the completion of the sign in flow.
 @property(nonatomic, readonly, nullable) GIDSignInCompletion completion;
+
+/// The completion block to be called at the completion of the verify flow.
+@property(nonatomic, readonly, nullable) GIDVerifyCompletion verifyCompletion;
 
 /// The scopes to be used during the flow.
 @property(nonatomic, copy, nullable) NSArray<NSString *> *scopes;
