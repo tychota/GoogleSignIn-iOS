@@ -20,6 +20,7 @@ static NSString *const kEmailScope = @"email";
 static NSString *const kOldEmailScope = @"https://www.googleapis.com/auth/userinfo.email";
 static NSString *const kProfileScope = @"profile";
 static NSString *const kOldProfileScope = @"https://www.googleapis.com/auth/userinfo.profile";
+static NSString *const kAgeVerificationScope = @"https://www.googleapis.com/auth/verified.age.over18.standard";
 
 static BOOL hasProfile(NSString *scope) {
   return [scope isEqualToString:kProfileScope] || [scope isEqualToString:kOldProfileScope];
@@ -27,6 +28,10 @@ static BOOL hasProfile(NSString *scope) {
 
 static BOOL hasEmail(NSString *scope) {
   return [scope isEqualToString:kEmailScope] || [scope isEqualToString:kOldEmailScope];
+}
+
+static BOOL hasAgeVerification(NSString *scope) {
+  return [scope isEqualToString:kAgeVerificationScope];
 }
 
 // Checks whether |scopes| contains or implies a particular scope, using
@@ -58,6 +63,10 @@ static NSArray *addScopeTo(NSArray *originalScopes,
 + (NSArray *)scopesWithBasicProfile:(NSArray *)scopes {
   scopes = addScopeTo(scopes, hasEmail, kEmailScope);
   return addScopeTo(scopes, hasProfile, kProfileScope);
+}
+
++ (NSArray *)scopesWithAgeVerification:(NSArray *)scopes {
+  return addScopeTo(scopes, hasAgeVerification, kAgeVerificationScope);
 }
 
 @end
