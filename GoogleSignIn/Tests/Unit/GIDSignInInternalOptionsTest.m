@@ -30,27 +30,29 @@
 @implementation GIDSignInInternalOptionsTest
 
 - (void)testDefaultOptionsForVerificationFlow {
+#if TARGET_OS_IOS || TARGET_OS_MACCATALYST
   id configuration = OCMStrictClassMock([GIDConfiguration class]);
   id presentingViewController = OCMStrictClassMock([UIViewController class]);
   NSString *loginHint = @"login_hint";
-
+  
   GIDVerifyCompletion completion = ^(GIDVerifiedAccountDetailResult *_Nullable verifiedResult,
                                      NSError * _Nullable error) {};
   GIDSignInInternalOptions *options =
-      [GIDSignInInternalOptions defaultOptionsWithConfiguration:configuration
-                                       presentingViewController:presentingViewController
-                                                      loginHint:loginHint
-                                                  addScopesFlow:NO
-                                               verifyCompletion:completion];
-
+  [GIDSignInInternalOptions defaultOptionsWithConfiguration:configuration
+                                   presentingViewController:presentingViewController
+                                                  loginHint:loginHint
+                                              addScopesFlow:NO
+                                           verifyCompletion:completion];
+  
   XCTAssertTrue(options.interactive);
   XCTAssertFalse(options.continuation);
   XCTAssertFalse(options.addScopesFlow);
   XCTAssertNil(options.extraParams);
   XCTAssertEqual(options.accountDetailsToVerify, @[]);
-
+  
   OCMVerifyAll(configuration);
   OCMVerifyAll(presentingViewController);
+#endif // TARGET_OS_IOS || TARGET_OS_MACCATALYST
 }
 
 - (void)testDefaultOptions {
