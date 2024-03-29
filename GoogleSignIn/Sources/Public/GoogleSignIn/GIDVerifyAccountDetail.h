@@ -25,6 +25,7 @@
 
 @class GIDVerifiableAccountDetail;
 @class GIDVerifiedAccountDetailResult;
+@class GIDSignInInternalOptions;
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -84,6 +85,8 @@ NS_ASSUME_NONNULL_BEGIN
             additionalScopes:(nullable NSArray<NSString *> *)additionalScopes
                   completion:(nullable void (^)(GIDVerifiedAccountDetailResult *_Nullable verifyResult, 
                                                 NSError *_Nullable error))completion;
+
+- (void)verifyAccountDetailsInteractivelyWithOptions:(GIDSignInInternalOptions *)options;
 
 #endif
 
