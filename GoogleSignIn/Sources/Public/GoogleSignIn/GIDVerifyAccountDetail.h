@@ -27,6 +27,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @class GIDVerifiableAccountDetail;
 @class GIDVerifiedAccountDetailResult;
+@class GIDSignInInternalOptions;
 
 #if TARGET_OS_IOS
 /// Represents a completion block that takes a `GIDVerifiedAccountDetailResult` on success or an
@@ -73,24 +74,15 @@ typedef void (^GIDVerifyCompletion)(GIDVerifiedAccountDetailResult *_Nullable ve
                   completion:(nullable void (^)(GIDVerifiedAccountDetailResult *_Nullable verifyResult,
                                                 NSError *_Nullable error))completion;
 
-/// Starts an interactive verification flow using the provided hint and additional scopes.
+/// Starts authorization flow using the provided options.
 ///
-/// The completion will be called at the end of this process.  Any saved verification
-/// state will be replaced by the result of this flow.
+/// The method will ensure that the client has passed in valid parameters, provided a valid
+/// presenting view controller, and defined the proper callback schemes. If everything is valid,
+/// the method will start the incremental authorization flow.
 ///
-/// @param accountDetails A list of verifiable account details.
-/// @param presentingViewController The view controller used to present `SFSafariViewController` on
-///     iOS 9 and 10.
-/// @param hint An optional hint for the authorization server, for example the user's ID or email
-///     address, to be prefilled if possible.
-/// @param additionalScopes An optional array of scopes to request in addition to the basic profile scopes.
-/// @param completion The optional block called asynchronously on the main queue upon completion.
-- (void)verifyAccountDetails:(NSArray<GIDVerifiableAccountDetail *> *)accountDetails
-    presentingViewController:(UIViewController *)presentingViewController
-                        hint:(nullable NSString *)hint
-            additionalScopes:(nullable NSArray<NSString *> *)additionalScopes
-                  completion:(nullable void (^)(GIDVerifiedAccountDetailResult *_Nullable verifyResult,
-                                                NSError *_Nullable error))completion;
+/// @param options The options to use to perform authentication.
+- (void)verifyAccountDetailsInteractivelyWithOptions:(GIDSignInInternalOptions *)options;
+
 
 #endif // TARGET_OS_IOS
 

@@ -23,8 +23,6 @@
 #import "GoogleSignIn/Sources/GIDSignInCallbackSchemes.h"
 #import "GoogleSignIn/Sources/GIDSignInInternalOptions.h"
 
-// #import <AppAuth/OIDServiceConfiguration.h>
-
 @implementation GIDVerifyAccountDetail
 
 #if TARGET_OS_IOS
@@ -44,13 +42,7 @@
   // TODO(#383): Implement this method.
 }
 
-- (void)verifyAccountDetails:(NSArray<GIDVerifiableAccountDetail *> *)accountDetails
-    presentingViewController:(UIViewController *)presentingViewController
-                        hint:(nullable NSString *)hint
-            additionalScopes:(nullable NSArray<NSString *> *)additionalScopes
-                  completion:(nullable void (^)(GIDVerifiedAccountDetailResult *_Nullable verifyResult,
-                                                NSError *_Nullable error))completion {
-  // TODO(#383): Implement this method.
+- (void)verifyAccountDetailsInteractivelyWithOptions:(GIDSignInInternalOptions *)options {
 }
 
 #endif // TARGET_OS_IOS
