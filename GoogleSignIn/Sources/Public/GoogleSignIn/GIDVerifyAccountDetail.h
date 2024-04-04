@@ -25,6 +25,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@class GIDConfiguration;
 @class GIDVerifiableAccountDetail;
 @class GIDVerifiedAccountDetailResult;
 @class GIDSignInInternalOptions;
@@ -38,6 +39,9 @@ typedef void (^GIDVerifyCompletion)(GIDVerifiedAccountDetailResult *_Nullable ve
 
 /// This class is used to verify a user's Google account details.
 @interface GIDVerifyAccountDetail : NSObject
+
+/// The active configuration for this instance of `GIDVerifyAccountDetail`.
+@property(nonatomic, nullable) GIDConfiguration *configuration;
 
 #if TARGET_OS_IOS
 
