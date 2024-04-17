@@ -48,6 +48,19 @@ static NSString *const kIncludeGrantedScopesParameter = @"include_granted_scopes
 static NSString *const kLoginHintParameter = @"login_hint";
 static NSString *const kHostedDomainParameter = @"hd";
 
+// The callback queue used for authentication flow.
+@interface GIDAuthFlow : GIDCallbackQueue
+
+@property(nonatomic, strong, nullable) OIDAuthState *authState;
+@property(nonatomic, strong, nullable) NSError *error;
+@property(nonatomic, copy, nullable) NSString *emmSupport;
+@property(nonatomic, nullable) GIDProfileData *profileData;
+
+@end
+
+@implementation GIDAuthFlow
+@end
+
 @implementation GIDVerifyAccountDetail {
   // This value is used when sign-in flows are resumed via the handling of a URL. Its value is
   // set when a sign-in flow is begun via |signInWithOptions:| when the options passed don't
@@ -55,6 +68,10 @@ static NSString *const kHostedDomainParameter = @"hd";
   GIDSignInInternalOptions *_currentOptions;
   // AppAuth configuration object.
   OIDServiceConfiguration *_appAuthConfiguration;
+  // AppAuth external user-agent session state.
+  id<OIDExternalUserAgentSession> _currentVerifyFlow;
+  // Flag to indicate that the auth flow is restarting.
+  BOOL _restarting;
 }
 
 - (void)verifyAccountDetails:(NSArray<GIDVerifiableAccountDetail *> *)accountDetails
@@ -152,10 +169,108 @@ for (GIDVerifiableAccountDetail *detail in options.accountDetailsToVerify) {
                                                   scopes:scopes
                                              redirectURL:redirectURL
                                             responseType:OIDResponseTypeCode
-                                    additionalParameters:additionalParameters];  
+                                    additionalParameters:additionalParameters];
+
+  _currentVerifyFlow = [OIDAuthorizationService
+      presentAuthorizationRequest:request
+#if TARGET_OS_IOS
+         presentingViewController:options.presentingViewController
+#endif // TARGET_OS_IOS
+                        callback:^(OIDAuthorizationResponse *_Nullable verificationResponse,
+                                   NSError *_Nullable error) {
+    [self processAuthorizationResponse:verificationResponse
+                                 error:error
+                            emmSupport:emmSupport];
+  }];
 }
 
-// #endif // TARGET_OS_IOS
+- (void)processAuthorizationResponse:(OIDAuthorizationResponse *)verificationResponse
+                               error:(NSError *)error
+                          emmSupport:(NSString *)emmSupport{
+  if (_restarting) {
+    // The auth flow is restarting, so the work here would be performed in the next round.
+    _restarting = NO;
+    return;
+  }
+
+  GIDAuthFlow *authFlow = [[GIDAuthFlow alloc] init];
+  authFlow.emmSupport = emmSupport;
+  // check whether or not the authorization response contains an authorization code
+  if (verificationResponse) {
+    // yes? fetch the verified age access token (GIDSignIn maybeFetchToken performing token request)
+    if (verificationResponse.authorizationCode.length) {
+      authFlow.authState = [[OIDAuthState alloc] initWithAuthorizationResponse:verificationResponse];
+      // perform auth code exchange
+      [self maybeFetchToken:authFlow];
+    } else {
+      // no? issue an error to client
+    }
+  }
+}
+
+// Fetches the access token if necessary as part of the auth flow.
+- (void)maybeFetchToken:(GIDAuthFlow *)authFlow {
+  OIDAuthState *authState = authFlow.authState;
+  // Do nothing if we have an auth flow error or a restored access token that isn't near expiration.
+  if (authFlow.error ||
+      (authState.lastTokenResponse.accessToken &&
+        [authState.lastTokenResponse.accessTokenExpirationDate timeIntervalSinceNow] >
+        kMinimumRestoredAccessTokenTimeToExpire)) {
+    return;
+  }
+  NSMutableDictionary<NSString *, NSString *> *additionalParameters = [@{} mutableCopy];
+  if (_currentOptions.configuration.serverClientID) {
+    additionalParameters[kAudienceParameter] = _currentOptions.configuration.serverClientID;
+  }
+  if (_currentOptions.configuration.openIDRealm) {
+    additionalParameters[kOpenIDRealmParameter] = _currentOptions.configuration.openIDRealm;
+  }
+#if TARGET_OS_IOS && !TARGET_OS_MACCATALYST
+  NSDictionary<NSString *, NSObject *> *params =
+      authState.lastAuthorizationResponse.additionalParameters;
+  NSString *passcodeInfoRequired = (NSString *)params[kEMMPasscodeInfoRequiredKeyName];
+  [additionalParameters addEntriesFromDictionary:
+      [GIDEMMSupport parametersWithParameters:@{}
+                                   emmSupport:authFlow.emmSupport
+                       isPasscodeInfoRequired:passcodeInfoRequired.length > 0]];
+#endif // TARGET_OS_IOS && !TARGET_OS_MACCATALYST
+  additionalParameters[kSDKVersionLoggingParameter] = GIDVersion();
+  additionalParameters[kEnvironmentLoggingParameter] = GIDEnvironment();
+
+  OIDTokenRequest *tokenRequest;
+  if (!authState.lastTokenResponse.accessToken &&
+      authState.lastAuthorizationResponse.authorizationCode) {
+    tokenRequest = [authState.lastAuthorizationResponse
+        tokenExchangeRequestWithAdditionalParameters:additionalParameters];
+  } else {
+    [additionalParameters
+        addEntriesFromDictionary:authState.lastTokenResponse.request.additionalParameters];
+    tokenRequest = [authState tokenRefreshRequestWithAdditionalParameters:additionalParameters];
+  }
+
+  [authFlow wait];
+  [OIDAuthorizationService
+      performTokenRequest:tokenRequest
+                 callback:^(OIDTokenResponse *_Nullable tokenResponse,
+                            NSError *_Nullable error) {
+    [authState updateWithTokenResponse:tokenResponse error:error];
+    authFlow.error = error;
+
+#if TARGET_OS_IOS && !TARGET_OS_MACCATALYST
+    if (authFlow.emmSupport) {
+      [GIDEMMSupport handleTokenFetchEMMError:error completion:^(NSError *error) {
+        authFlow.error = error;
+        [authFlow next];
+      }];
+    } else {
+      [authFlow next];
+    }
+#elif TARGET_OS_OSX || TARGET_OS_MACCATALYST
+    [authFlow next];
+#endif // TARGET_OS_OSX || TARGET_OS_MACCATALYST
+  }];
+}
+
 
 #pragma mark - Helpers
 
