@@ -22,6 +22,10 @@ final class AuthenticationViewModel: ObservableObject {
   /// The user's log in status.
   /// - note: This will publish updates when its value changes.
   @Published var state: State
+    /// The user's verification status.
+  /// - note: This will publish updates when its value changes.
+  @Published var verificationState: VerificationState
+
   private var authenticator: GoogleSignInAuthenticator {
     return GoogleSignInAuthenticator(authViewModel: self)
   }
@@ -43,6 +47,13 @@ final class AuthenticationViewModel: ObservableObject {
     } else {
       self.state = .signedOut
     }
+
+    self.verificationState = .unverified
+  }
+
+  /// Verifies the user.
+  func verifyAccountDetails() {
+    authenticator.verifyAccountDetails()
   }
 
   /// Signs the user in.
@@ -79,5 +90,13 @@ extension AuthenticationViewModel {
     case signedIn(GIDGoogleUser)
     /// The user is logged out.
     case signedOut
+  }
+
+    /// An enumeration respresenting verification status.
+  enum VerificationState {
+    /// The user is verified and is the associated value of this case.
+    case verified(GIDVerifiedAccountDetailResult)
+    /// The user is not verified.
+    case unverified
   }
 }

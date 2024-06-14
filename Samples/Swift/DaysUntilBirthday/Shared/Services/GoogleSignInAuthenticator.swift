@@ -27,6 +27,31 @@ final class GoogleSignInAuthenticator: ObservableObject {
     self.authViewModel = authViewModel
   }
 
+#if os(iOS)
+  /// Verifies the user based upon the selected account.
+  /// - note: Successful calls to this will set the `authViewModel`'s `state` property.
+  func verifyAccountDetails() {
+    let accountDetails: [GIDVerifiableAccountDetail] = [
+      GIDVerifiableAccountDetail(accountDetailType:.ageOver18)
+    ]
+
+    guard let rootViewController = UIApplication.shared.windows.first?.rootViewController else {
+      print("There is no root view controller!")
+      return
+    }
+
+    let verifyAccountDetail = GIDVerifyAccountDetail()
+    verifyAccountDetail.verifyAccountDetails(accountDetails, presenting: rootViewController) {
+      verifyResult, error in
+            guard let verifyResult = verifyResult else {
+              print("Error! \(String(describing: error))")
+              return
+            }
+      self.authViewModel.verificationState = .verified(verifyResult)
+    }
+  }
+#endif
+  
   /// Signs in the user based upon the selected account.'
   /// - note: Successful calls to this will set the `authViewModel`'s `state` property.
   func signIn() {
