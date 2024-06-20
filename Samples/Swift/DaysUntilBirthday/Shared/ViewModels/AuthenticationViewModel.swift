@@ -53,7 +53,12 @@ final class AuthenticationViewModel: ObservableObject {
 
   /// Verifies the user.
   func verifyAccountDetails() {
-    authenticator.verifyAccountDetails()
+    switch self.verificationState {
+    case .unverified:
+      authenticator.verifyAccountDetails()
+    case .verified:
+      return
+    }
   }
 
   /// Signs the user in.

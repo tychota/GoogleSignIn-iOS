@@ -40,11 +40,11 @@ struct VerificationView: View {
 
         Spacer()
       }
-      .navigationTitle(NSLocalizedString("Verified age over 18", comment: "Verified age label"))
+      .navigationTitle(NSLocalizedString("Verified account", comment: "Verified account label"))
     case .unverified:
             ProgressView()
-              .navigationTitle(NSLocalizedString("Unverified age over 18",
-                                                 comment: "Verified age label"))
+              .navigationTitle(NSLocalizedString("Unverified account",
+                                                 comment: "Unverified account label"))
     }
   }
 
