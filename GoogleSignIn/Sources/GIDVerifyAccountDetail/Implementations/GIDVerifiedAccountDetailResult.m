@@ -57,14 +57,14 @@ NS_ASSUME_NONNULL_BEGIN
 
   OIDTokenRequest *refreshRequest = 
       [[OIDTokenRequest alloc] initWithConfiguration:request.configuration
-                                           grantType:OIDGrantTypeAuthorizationCode
-                                   authorizationCode:authResponse.authorizationCode
-                                         redirectURL:request.redirectURL
+                                           grantType:OIDGrantTypeRefreshToken
+                                   authorizationCode:nil
+                                         redirectURL:nil
                                             clientID:request.clientID
                                         clientSecret:request.clientSecret
                                                scope:request.scope                     
                                         refreshToken:self.refreshTokenString
-                                        codeVerifier:request.codeVerifier
+                                        codeVerifier:nil
                                 additionalParameters:request.additionalParameters];
 
   [OIDAuthorizationService performTokenRequest:refreshRequest

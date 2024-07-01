@@ -20,6 +20,38 @@ import GoogleSignIn
 struct VerificationView: View {
   @ObservedObject var authViewModel: AuthenticationViewModel
 
+//  private let verifyBaseUrlString = "https://autopush-verifywithgoogle.sandbox.googleapis.com/v1/ageVerification"
+
+  
+//
+//  private lazy var session: URLSession? = {
+//    guard let accessToken = GIDSignIn
+//            .sharedInstance
+//            .currentUser?
+//            .accessToken
+//            .tokenString else { return nil }
+//    let configuration = URLSessionConfiguration.default
+//    configuration.httpAdditionalHeaders = [
+//      "Authorization": "Bearer \(accessToken)"
+//    ]
+//    return URLSession(configuration: configuration)
+//  }()'
+
+//  private func sessionWithFreshToken(completion: @escaping (Result<URLSession, Error>) -> Void) {
+//    GIDSignIn.sharedInstance.currentUser?.refreshTokensIfNeeded { user, error in
+//      guard let token = user?.accessToken.tokenString else {
+//        completion(.failure(.couldNotCreateURLSession(error)))
+//        return
+//      }
+//      let configuration = URLSessionConfiguration.default
+//      configuration.httpAdditionalHeaders = [
+//        "Authorization": "Bearer \(token)"
+//      ]
+//      let session = URLSession(configuration: configuration)
+//      completion(.success(session))
+//    }
+//  }
+
   var body: some View {
     switch authViewModel.verificationState {
     case .verified(let result):
@@ -39,12 +71,28 @@ struct VerificationView: View {
         }
 
         Spacer()
+        Text("Letsgeddit:")
+          .font(.title)
+
+//        sessionWithFreshToken(completion: <#T##(Result<URLSession, Error>) -> Void#>)
       }
       .navigationTitle(NSLocalizedString("Verified account", comment: "Verified account label"))
+      .toolbar {
+        ToolbarItemGroup(placement: .navigationBarTrailing) {
+          Button(NSLocalizedString("Refresh", comment: "Refresh button"), action:{refresh(results: result)})
+        }
+      }
     case .unverified:
             ProgressView()
               .navigationTitle(NSLocalizedString("Unverified account",
                                                  comment: "Unverified account label"))
+    }
+  }
+
+  func refresh(results: GIDVerifiedAccountDetailResult) {
+    results.refreshTokens { (result, error) in
+      print("you made it")
+      authViewModel.verificationState = .verified(result)
     }
   }
 

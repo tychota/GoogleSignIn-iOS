@@ -49,6 +49,12 @@ final class GoogleSignInAuthenticator: ObservableObject {
             }
       self.authViewModel.verificationState = .verified(verifyResult)
     }
+    print("let there be verifyAccountDetail!")
+    self.authViewModel.accountant = verifyAccountDetail
+  }
+
+  func refresh () {
+    
   }
 #endif
   
@@ -93,6 +99,8 @@ final class GoogleSignInAuthenticator: ObservableObject {
 
   /// Disconnects the previously granted scope and signs the user out.
   func disconnect() {
+    self.authViewModel.verificationState = .unverified
+
     GIDSignIn.sharedInstance.disconnect { error in
       if let error = error {
         print("Encountered error disconnecting scope: \(error).")

@@ -26,6 +26,8 @@ final class AuthenticationViewModel: ObservableObject {
   /// - note: This will publish updates when its value changes.
   @Published var verificationState: VerificationState
 
+  @Published var accountant: GIDVerifyAccountDetail
+
   private var authenticator: GoogleSignInAuthenticator {
     return GoogleSignInAuthenticator(authViewModel: self)
   }
@@ -49,6 +51,7 @@ final class AuthenticationViewModel: ObservableObject {
     }
 
     self.verificationState = .unverified
+    self.accountant = GIDVerifyAccountDetail()
   }
 
   /// Verifies the user.
@@ -74,6 +77,10 @@ final class AuthenticationViewModel: ObservableObject {
   /// Disconnects the previously granted scope and logs the user out.
   func disconnect() {
     authenticator.disconnect()
+  }
+
+  func refresh() {
+    authenticator.refresh()
   }
 
   var hasBirthdayReadScope: Bool {

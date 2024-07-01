@@ -8,6 +8,8 @@
 
 /* Begin PBXBuildFile section */
 		4C6A2BA2321434ACBD2AF201 /* Pods_DaysUntilBirthdayForPod__macOS_.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 926A15D393D684C68E09FB0F /* Pods_DaysUntilBirthdayForPod__macOS_.framework */; };
+		641494FF2C2F6E8900C9A613 /* VerificationLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 641494FE2C2F6E8900C9A613 /* VerificationLoader.swift */; };
+		641495012C2F70AA00C9A613 /* Verification.swift in Sources */ = {isa = PBXBuildFile; fileRef = 641495002C2F70AA00C9A613 /* Verification.swift */; };
 		64BFF6C22C1B4B8000F8F552 /* VerificationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 64BFF6C12C1B4B8000F8F552 /* VerificationView.swift */; };
 		7345AD032703D9470020AFB1 /* DaysUntilBirthday.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7345AD022703D9470020AFB1 /* DaysUntilBirthday.swift */; };
 		7345AD052703D9470020AFB1 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7345AD042703D9470020AFB1 /* ContentView.swift */; };
@@ -46,6 +48,8 @@
 		1A129363EBB5DF1F41FAAB14 /* Pods-DaysUntilBirthdayForPod(macOS).release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-DaysUntilBirthdayForPod(macOS).release.xcconfig"; path = "Target Support Files/Pods-DaysUntilBirthdayForPod(macOS)/Pods-DaysUntilBirthdayForPod(macOS).release.xcconfig"; sourceTree = "<group>"; };
 		29BEB027A694593FA0450863 /* Pods-DaysUntilBirthdayForPod(iOS).debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-DaysUntilBirthdayForPod(iOS).debug.xcconfig"; path = "Target Support Files/Pods-DaysUntilBirthdayForPod(iOS)/Pods-DaysUntilBirthdayForPod(iOS).debug.xcconfig"; sourceTree = "<group>"; };
 		5CF615341A61D92D89389D44 /* Pods-DaysUntilBirthdayForPod (macOS).release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-DaysUntilBirthdayForPod (macOS).release.xcconfig"; path = "Target Support Files/Pods-DaysUntilBirthdayForPod (macOS)/Pods-DaysUntilBirthdayForPod (macOS).release.xcconfig"; sourceTree = "<group>"; };
+		641494FE2C2F6E8900C9A613 /* VerificationLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerificationLoader.swift; sourceTree = "<group>"; };
+		641495002C2F70AA00C9A613 /* Verification.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Verification.swift; sourceTree = "<group>"; };
 		64BFF6C12C1B4B8000F8F552 /* VerificationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerificationView.swift; sourceTree = "<group>"; };
 		7345ACFF2703D9470020AFB1 /* DaysUntilBirthdayForPod (iOS).app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "DaysUntilBirthdayForPod (iOS).app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		7345AD022703D9470020AFB1 /* DaysUntilBirthday.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DaysUntilBirthday.swift; sourceTree = "<group>"; };
@@ -208,6 +212,7 @@
 			isa = PBXGroup;
 			children = (
 				739FCC47270E659A00C92042 /* Birthday.swift */,
+				641495002C2F70AA00C9A613 /* Verification.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -226,6 +231,7 @@
 			children = (
 				7345AD172703D9C30020AFB1 /* GoogleSignInAuthenticator.swift */,
 				736F49B9270E05E200580053 /* BirthdayLoader.swift */,
+				641494FE2C2F6E8900C9A613 /* VerificationLoader.swift */,
 				7345AD192703D9C30020AFB1 /* UserProfileImageLoader.swift */,
 			);
 			path = Services;
@@ -415,6 +421,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				641495012C2F70AA00C9A613 /* Verification.swift in Sources */,
 				64BFF6C22C1B4B8000F8F552 /* VerificationView.swift in Sources */,
 				739FCC48270E659A00C92042 /* Birthday.swift in Sources */,
 				739FCC46270E467600C92042 /* BirthdayView.swift in Sources */,
@@ -428,6 +435,7 @@
 				7345AD202703D9C30020AFB1 /* AuthenticationViewModel.swift in Sources */,
 				7345AD052703D9470020AFB1 /* ContentView.swift in Sources */,
 				7345AD032703D9470020AFB1 /* DaysUntilBirthday.swift in Sources */,
+				641494FF2C2F6E8900C9A613 /* VerificationLoader.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

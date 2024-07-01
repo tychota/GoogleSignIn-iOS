@@ -16,7 +16,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-static NSString *const kLSOServer = @"accounts.google.com";
+static NSString *const kLSOServer = @"accounts.sandbox.google.com";
 static NSString *const kTokenServer = @"oauth2.googleapis.com";
 static NSString *const kUserInfoServer = @"www.googleapis.com";
 

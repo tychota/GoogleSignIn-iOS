@@ -230,6 +230,18 @@ NSErrorDomain const kGIDVerifyErrorDomain = @"com.google.GIDVerifyAccountDetail"
   }
 }
 
+- (BOOL)handleURL:(NSURL *)url {
+  // Check if the callback path matches the expected one for a URL from Safari/Chrome/SafariVC.
+  if ([url.path isEqual:kBrowserCallbackPath]) {
+    if ([_currentAuthorizationFlow resumeExternalUserAgentFlowWithURL:url]) {
+      _currentAuthorizationFlow = nil;
+      return YES;
+    }
+    return NO;
+  }
+  return NO;
+}
+
 #pragma mark - Helpers
 
 // Assert that a current user exists.

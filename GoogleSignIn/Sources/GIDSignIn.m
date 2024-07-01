@@ -527,7 +527,7 @@ static const NSTimeInterval kPresentationDelayAfterCancel = 1.0;
 #endif // TARGET_OS_MACCATALYST || TARGET_OS_OSX
 
   NSMutableDictionary<NSString *, NSString *> *additionalParameters = [@{} mutableCopy];
-  additionalParameters[kIncludeGrantedScopesParameter] = @"true";
+  additionalParameters[kIncludeGrantedScopesParameter] = @"false";
   if (options.configuration.serverClientID) {
     additionalParameters[kAudienceParameter] = options.configuration.serverClientID;
   }

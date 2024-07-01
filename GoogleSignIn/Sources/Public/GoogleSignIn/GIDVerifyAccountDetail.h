@@ -51,6 +51,8 @@ typedef void (^GIDVerifyCompletion)(GIDVerifiedAccountDetailResult *_Nullable ve
 /// This class is used to verify a user's Google account details.
 @interface GIDVerifyAccountDetail : NSObject
 
+- (BOOL)handleURL:(NSURL *)url;
+
 /// The active configuration for this instance of `GIDVerifyAccountDetail`.
 @property(nonatomic, nullable) GIDConfiguration *configuration;
 
