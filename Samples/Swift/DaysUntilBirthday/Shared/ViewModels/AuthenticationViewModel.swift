@@ -42,6 +42,15 @@ final class AuthenticationViewModel: ObservableObject {
     }
   }
 
+  var authorizedAccountDetails: [String] {
+    switch verificationState {
+    case .verified(let result):
+      return []//result.verifiedAuthState.scope
+    case .unverified:
+      return []
+    }
+  }
+
   /// Creates an instance of this view model.
   init() {
     if let user = GIDSignIn.sharedInstance.currentUser {
@@ -86,6 +95,11 @@ final class AuthenticationViewModel: ObservableObject {
   var hasBirthdayReadScope: Bool {
     return authorizedScopes.contains(BirthdayLoader.birthdayReadScope)
   }
+
+//  var hasAgeScope: Bool {
+//    return authorizedAccountDetails.contains(<#T##other: Collection##Collection#>)
+////    return authorizedScopes.contains(BirthdayLoader.birthdayReadScope)
+//  }
 
   /// Adds the requested birthday read scope.
   /// - parameter completion: An escaping closure that is called upon successful completion.

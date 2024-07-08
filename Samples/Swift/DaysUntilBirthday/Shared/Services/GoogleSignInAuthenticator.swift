@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import Combine
 import Foundation
 import GoogleSignIn
 
@@ -48,9 +49,33 @@ final class GoogleSignInAuthenticator: ObservableObject {
               return
             }
       self.authViewModel.verificationState = .verified(verifyResult)
+      // next is to check for age verified scope on here REE
     }
     print("let there be verifyAccountDetail!")
     self.authViewModel.accountant = verifyAccountDetail
+  }
+
+  @Published private(set) var verification: Verification?
+
+  private let verificationLoader = VerificationLoader()
+  private var cancellable: AnyCancellable?
+
+  func fetchAgeVerificationSignal(result: GIDVerifiedAccountDetailResult) {
+    verificationLoader.verificationPublisher(result: result) { publisher in
+      self.cancellable = publisher.sink { completion in
+        switch completion {
+        case .finished:
+          print("um finished right?")
+          break
+        case .failure(_): // this is meant to catch an error parameter
+          print("hehehe not finished")
+        }
+      } receiveValue: {
+        verification in
+        self.verification = verification
+        print("what is a verification")
+      }
+    }
   }
 
   func refresh () {

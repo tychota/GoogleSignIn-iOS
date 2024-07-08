@@ -33,27 +33,73 @@ final class VerificationLoader: ObservableObject {
     return URLRequest(url: url)
   }()
 
-  private func session(completion: @escaping (Result<URLSession, Error>) -> Void, result: GIDVerifiedAccountDetailResult) {
-    let token = result.accessTokenString
+  private func session(result: GIDVerifiedAccountDetailResult, completion: @escaping (Result<URLSession, Error>) -> Void) {
+    guard let token = result.accessTokenString else {
+      completion(.failure(.couldNotCreateURLSession))
+      return
+    }
     let configuration = URLSessionConfiguration.default
     configuration.httpAdditionalHeaders = [
-      "Authorization": "Bearer \(String(describing: token))" // maybe change this
+      "Authorization": "Bearer \(token)" // maybe change this
     ]
     let session = URLSession(configuration: configuration)
     completion(.success(session))
   }
 
-  func verificationPublisher(completion: (AnyPublisher<Verification, Error) -> Void) {
-    session { [weak self] result in
+  func verificationPublisher(result: GIDVerifiedAccountDetailResult, completion: @escaping (AnyPublisher<Verification, Error>) -> Void) {
+    // Assuming you have a GIDVerifiedAccountDetailResult object named 'verificationResult'
+
+    // session is returned, we get a result we expect
+    session(result: result) {result in
       switch result {
       case .success(let authSession):
-        guard let request = self?.request
+        guard let request = self.request else {
+          print("AHHHHH ERROR")
+          return
+        }
+
+        let vPublisher = authSession.dataTaskPublisher(for: request)
+          .tryMap { data, error -> Verification in
+            if let jsonString = String(data:data, encoding: .utf8) {
+              print("Raw JSON Response: \(jsonString)")
+            } // this prints the expected json response
+
+            let decoder = JSONDecoder()
+            do {
+              let verificationResponse = try decoder.decode(VerificationResponse.self, from: data)
+//              let firstVerification = verificationResponse.firstVerification
+              guard let firstVerification = verificationResponse.firstVerification else {
+                  throw Error.noVerificationInResult // Or a custom error
+              }
+              return firstVerification
+            } catch {
+              print("IM FINDING YOU: \(error)")
+            }
+            print("im still here") // never gets printed
+            throw Error.noVerificationInResult
+          }
+          .mapError { error -> Error in
+            guard let loaderError = error as? Error else {
+              return Error.couldNotGetVerificationSignal(underlying: error)
+            }
+            return loaderError
+          }
+          .receive(on: DispatchQueue.main)
+          .eraseToAnyPublisher()
+        completion(vPublisher)
       case .failure(let error):
+        // Handle the error that occurred while creating the session
+        print("Error creating URLSession: \(error)")
         completion(Fail(error: error).eraseToAnyPublisher())
       }
-
     }
-
   }
+}
 
+extension VerificationLoader {
+  enum Error: Swift.Error {
+    case couldNotGetVerificationSignal(underlying: Swift.Error)
+    case couldNotCreateURLSession
+    case noVerificationInResult
+  }
 }

@@ -19,75 +19,62 @@ import GoogleSignIn
 
 struct VerificationView: View {
   @ObservedObject var authViewModel: AuthenticationViewModel
+  @StateObject var ageViewModel = AgeViewModel()
 
-//  private let verifyBaseUrlString = "https://autopush-verifywithgoogle.sandbox.googleapis.com/v1/ageVerification"
+  private let verificationLoader = VerificationLoader()
 
-  
-//
-//  private lazy var session: URLSession? = {
-//    guard let accessToken = GIDSignIn
-//            .sharedInstance
-//            .currentUser?
-//            .accessToken
-//            .tokenString else { return nil }
-//    let configuration = URLSessionConfiguration.default
-//    configuration.httpAdditionalHeaders = [
-//      "Authorization": "Bearer \(accessToken)"
-//    ]
-//    return URLSession(configuration: configuration)
-//  }()'
-
-//  private func sessionWithFreshToken(completion: @escaping (Result<URLSession, Error>) -> Void) {
-//    GIDSignIn.sharedInstance.currentUser?.refreshTokensIfNeeded { user, error in
-//      guard let token = user?.accessToken.tokenString else {
-//        completion(.failure(.couldNotCreateURLSession(error)))
-//        return
-//      }
-//      let configuration = URLSessionConfiguration.default
-//      configuration.httpAdditionalHeaders = [
-//        "Authorization": "Bearer \(token)"
-//      ]
-//      let session = URLSession(configuration: configuration)
-//      completion(.success(session))
-//    }
-//  }
+  @State private var ageVerificationStatus = "no updated status" // Default to pending
 
   var body: some View {
     switch authViewModel.verificationState {
     case .verified(let result):
+      // honestly next task is to just fr clean this up, make a design, figure out what structs we need but we get the signal !!
       VStack {
-        Text("List of result object properties:")
-          .font(.headline)
+//        Button(NSLocalizedString("Age verification status: \(ageVerificationStatus)", comment: "Age Verfication Status Button")) {
+//          self.ageViewModel.fetchAge(result: result) { ageVerified in
+//            self.ageVerificationStatus = ageVerified ? "AGE_OVER_18_STANDARD" : "AGE_PENDING"
+//          }
+//        }
 
-        List {
-          Text("Access Token: \(result.accessTokenString ?? "Not available")")
-          Text("Refresh Token: \(result.refreshTokenString ?? "Not available")")
+//          Button(NSLocalizedString("Age verification status:", comment: "Age Verfication Status Button"), action:{self.ageViewModel.fetchAge(result: result)})
 
-          if let expirationDate = result.expirationDate {
+
+        Text("Age verification status: \(ageVerificationStatus)")
+
+          Text("List of result object properties:")
+            .font(.headline)
+
+          List {
+            Text("Access Token: \(result.accessTokenString ?? "Not available")")
+            Text("Refresh Token: \(result.refreshTokenString ?? "Not available")")
+
+            if let expirationDate = result.expirationDate {
               Text("Expiration Date: \(formatDateWithDateFormatter(expirationDate))")
-          } else {
+            } else {
               Text("Expiration Date: Not available")
+            }
+          }
+
+          Spacer()
+          Text("Letsgeddit:")
+            .font(.title)
+
+          Button(NSLocalizedString("Age it up", comment: "Age button"), action:{self.ageViewModel.fetchAge(result: result)})
+
+        }
+        .navigationTitle(NSLocalizedString("Verified account", comment: "Verified account label"))
+        .toolbar {
+          ToolbarItemGroup(placement: .navigationBarTrailing) {
+            Button(NSLocalizedString("Refresh", comment: "Refresh button"), action:{refresh(results: result)})
           }
         }
-
-        Spacer()
-        Text("Letsgeddit:")
-          .font(.title)
-
-//        sessionWithFreshToken(completion: <#T##(Result<URLSession, Error>) -> Void#>)
-      }
-      .navigationTitle(NSLocalizedString("Verified account", comment: "Verified account label"))
-      .toolbar {
-        ToolbarItemGroup(placement: .navigationBarTrailing) {
-          Button(NSLocalizedString("Refresh", comment: "Refresh button"), action:{refresh(results: result)})
-        }
-      }
     case .unverified:
-            ProgressView()
-              .navigationTitle(NSLocalizedString("Unverified account",
-                                                 comment: "Unverified account label"))
+      ProgressView()
+        .navigationTitle(NSLocalizedString("Unverified account",
+                                           comment: "Unverified account label"))
     }
   }
+    
 
   func refresh(results: GIDVerifiedAccountDetailResult) {
     results.refreshTokens { (result, error) in
@@ -101,5 +88,9 @@ struct VerificationView: View {
       dateFormatter.dateStyle = .medium
       dateFormatter.timeStyle = .short
       return dateFormatter.string(from: date)
+  }
+
+  func grabAge() {
+
   }
 }
