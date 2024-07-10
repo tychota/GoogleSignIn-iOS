@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import Combine
 import Foundation
 import GoogleSignIn
 
@@ -21,7 +22,23 @@ import GoogleSignIn
 
 /// An observable class for verifying via Google.
 final class VerificationLoader: ObservableObject {
+  @Published private(set) var verification: Verification?
+
   private var verifiedAgeViewModel: VerifiedAgeViewModel
+
+  private let baseUrlString = "https://autopush-verifywithgoogle.sandbox.googleapis.com/v1/ageVerification"
+
+  private lazy var components: URLComponents? = {
+    var comps = URLComponents(string: baseUrlString)
+    return comps
+  }()
+
+  private lazy var request: URLRequest? = {
+    guard let components = components, let url = components.url else {
+      return nil
+    }
+    return URLRequest(url: url)
+  }()
 
   /// Creates an instance of this loader.
   /// - parameter verifiedAgeViewModel: The view model to use to set verification status on.
@@ -50,6 +67,82 @@ final class VerificationLoader: ObservableObject {
         return
       }
       self.verifiedAgeViewModel.verificationState = .verified(verifyResult)
+
+      // fetch age verification here
+      self.verifiedAgeViewModel.ageVerificationStatus = self.fetchAgeVerificationSignal(verifyResult: verifyResult)
+    }
+  }
+
+  private var cancellable: AnyCancellable?
+
+  func fetchAgeVerificationSignal(verifyResult: GIDVerifiedAccountDetailResult) -> String {
+    self.verificationPublisher(verifyResult: verifyResult) { publisher in
+      self.cancellable = publisher.sink { completion in
+        switch completion {
+        case .finished:
+          break
+        case . failure(let error):
+          print("there was an error")
+        }
+      } receiveValue: { verification in
+        self.verification = verification
+      }
+    }
+  }
+
+  private func createSession(verifyResult: GIDVerifiedAccountDetailResult,
+                             completion: @escaping (Result<URLSession, Error>) -> Void) {
+    guard let token = verifyResult.accessTokenString else {
+      print("could not create url session")
+      return
+    }
+    let configuration = URLSessionConfiguration.default
+    configuration.httpAdditionalHeaders = [
+      "Authorization": "Bearer \(token)"
+    ]
+    let session = URLSession(configuration: configuration)
+    completion(.success(session))
+  }
+
+  func verificationPublisher(verifyResult: GIDVerifiedAccountDetailResult,
+                             completion: @escaping (AnyPublisher<Verification, Error>) -> Void) {
+    createSession(verifyResult: verifyResult) { result in
+      switch result {
+      case .success(let urlSession):
+        guard let request = self.request else {
+          print("no request")
+          return
+        }
+        let verificationPublisher = urlSession.dataTaskPublisher(for: request)
+          .tryMap { data, error -> Verification in
+            let decoder = JSONDecoder()
+            do {
+              let verificationResponse = try decoder.decode(VerificationResponse.self, from: data)
+              guard let firstVerification = verificationResponse.firstVerification else {
+                print("there is no firstVerification")
+                //throw Error.noVerificationInResult // Or a custom error
+              }
+              return firstVerification
+            } catch {
+              print("IM FINDING YOU: \(error)")
+            }
+            print("im still here") // never gets printed
+//            throw Error.noVerificationInResult
+            print ("there was no verification result")
+          }
+          .mapError { error -> Error in
+            guard let loaderError = error as? Error else {
+              print("there was loaderError")
+              //return Error.couldNotGetVerificationSignal(underlying: error)
+            }
+            return loaderError
+          }
+          .receive(on: DispatchQueue.main)
+          .eraseToAnyPublisher()
+        completion(verificationPublisher)
+      case .failure:
+        print("could not make session")
+      }
     }
   }
 }

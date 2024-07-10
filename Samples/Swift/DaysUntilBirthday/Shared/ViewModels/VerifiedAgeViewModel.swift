@@ -24,6 +24,8 @@ final class VerifiedAgeViewModel: ObservableObject {
   /// - note: This will publish updates when its value changes.
   @Published var verificationState: VerificationState
 
+  @Published var ageVerificationStatus = "Status Unavailable" // Default to pending
+
   private var loader: VerificationLoader {
     return VerificationLoader(verifiedViewAgeModel: self)
   }

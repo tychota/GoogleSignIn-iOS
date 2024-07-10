@@ -12,6 +12,7 @@
 		641495082C3C90E100C9A613 /* VerificationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 641495062C3C90E100C9A613 /* VerificationView.swift */; };
 		6414950A2C3E094B00C9A613 /* VerifiedAgeViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 641495092C3E094B00C9A613 /* VerifiedAgeViewModel.swift */; };
 		6414950C2C3E0C7A00C9A613 /* VerificationLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6414950B2C3E0C7A00C9A613 /* VerificationLoader.swift */; };
+		6414950E2C3F303500C9A613 /* Verification.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6414950D2C3F303500C9A613 /* Verification.swift */; };
 		7345AD032703D9470020AFB1 /* DaysUntilBirthday.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7345AD022703D9470020AFB1 /* DaysUntilBirthday.swift */; };
 		7345AD052703D9470020AFB1 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7345AD042703D9470020AFB1 /* ContentView.swift */; };
 		7345AD072703D9480020AFB1 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 7345AD062703D9480020AFB1 /* Assets.xcassets */; };
@@ -52,6 +53,7 @@
 		641495062C3C90E100C9A613 /* VerificationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerificationView.swift; sourceTree = "<group>"; };
 		641495092C3E094B00C9A613 /* VerifiedAgeViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedAgeViewModel.swift; sourceTree = "<group>"; };
 		6414950B2C3E0C7A00C9A613 /* VerificationLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerificationLoader.swift; sourceTree = "<group>"; };
+		6414950D2C3F303500C9A613 /* Verification.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Verification.swift; sourceTree = "<group>"; };
 		7345ACFF2703D9470020AFB1 /* DaysUntilBirthdayForPod (iOS).app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "DaysUntilBirthdayForPod (iOS).app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		7345AD022703D9470020AFB1 /* DaysUntilBirthday.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DaysUntilBirthday.swift; sourceTree = "<group>"; };
 		7345AD042703D9470020AFB1 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -213,6 +215,7 @@
 			isa = PBXGroup;
 			children = (
 				739FCC47270E659A00C92042 /* Birthday.swift */,
+				6414950D2C3F303500C9A613 /* Verification.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -427,6 +430,7 @@
 				739FCC46270E467600C92042 /* BirthdayView.swift in Sources */,
 				7345AD1B2703D9C30020AFB1 /* SignInView.swift in Sources */,
 				7345AD212703D9C30020AFB1 /* GoogleSignInAuthenticator.swift in Sources */,
+				6414950E2C3F303500C9A613 /* Verification.swift in Sources */,
 				6414950A2C3E094B00C9A613 /* VerifiedAgeViewModel.swift in Sources */,
 				7345AD232703D9C30020AFB1 /* UserProfileImageLoader.swift in Sources */,
 				7345AD1E2703D9C30020AFB1 /* UserProfileImageView.swift in Sources */,

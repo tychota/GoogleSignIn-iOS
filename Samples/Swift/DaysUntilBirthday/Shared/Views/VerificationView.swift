@@ -24,6 +24,12 @@ struct VerificationView: View {
     switch verifiedAgeViewModel.verificationState {
     case .verified(let result):
       VStack(alignment:.leading) {
+        Text("Account details verification status:")
+          .font(.headline)
+
+        Text("Age verified: \(verifiedAgeViewModel.ageVerificationStatus)")
+          .padding(.bottom)
+
         Text("List of result object properties:")
           .font(.headline)
 
@@ -68,7 +74,7 @@ struct VerificationView: View {
 
   func refresh(results: GIDVerifiedAccountDetailResult) {
     results.refreshTokens { (result, error) in
-      authViewModel.verificationState = .verified(result)
+      verifiedAgeViewModel.verificationState = .verified(result)
     }
   }
 }
