@@ -46,10 +46,10 @@ final class VerificationLoader: ObservableObject {
     self.verifiedAgeViewModel = verifiedViewAgeModel
   }
 
-  /// Verifies the user's age based upon the selected account.
+  /// Verifies the user's age is over 18 based upon the selected account.
   /// - note: Successful calls to this method will set the `verificationState` property of the
   /// `verifiedAgeViewModel` instance passed to the initializer.
-  func verifyAccountDetails() {
+  func verifyUserAgeOver18() {
     guard let rootViewController = UIApplication.shared.windows.first?.rootViewController else {
       print("There is no root view controller!")
       return

@@ -37,14 +37,9 @@ final class VerifiedAgeViewModel: ObservableObject {
     self.ageVerificationStatus = "Status Unavailable"
   }
 
-  /// Verifies the user.
-  func verifyAccountDetails() {
-    switch self.verificationState {
-    case .unverified:
-      loader.verifyAccountDetails()
-    case .verified:
-      return
-    }
+  /// Verifies the user's age is over 18.
+  func verifyUserAgeOver18() {
+    loader.verifyUserAgeOver18()
   }
 }
 
