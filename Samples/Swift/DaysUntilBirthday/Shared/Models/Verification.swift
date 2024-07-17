@@ -18,11 +18,11 @@ import Foundation
 
 struct Verification: Decodable {
   let status: VerificationStatus
+  let statusString: String
 
   init(from decoder: Decoder) throws {
     let container = try decoder.singleValueContainer()
-    var statusString = "squeak"
-    statusString = try container.decode(String.self)
+    self.statusString = try container.decode(String.self)
     guard let status = VerificationStatus(rawValue: statusString) else {
         throw DecodingError.dataCorruptedError(
             in: container,
@@ -32,40 +32,40 @@ struct Verification: Decodable {
     self.status = status
   }
 
+  init(status: Status) {
+    self.status = status.status
+    self.statusString = status.statusString
+  }
+
+  static var noVerificationStatus: Verification? {
+    return Verification(status: Status(status: VerificationStatus.agePending,
+                                       statusString: "AGE_PENDING"))
+  }
+
   enum VerificationStatus: String, Decodable {
       case agePending = "AGE_PENDING"
       case ageOver18Standard = "AGE_OVER_18_STANDARD"
   }
 }
 
+extension Verification {
+  struct Status: Decodable {
+    let status: VerificationStatus
+    let statusString: String
+  }
+}
+
 struct VerificationResponse: Decodable {
-  var verifications: [Verification]
-  var firstVerification: Verification?
+  let verifications: [Verification]
+  let firstVerification: Verification
 
   init(from decoder: Decoder) throws {
     let container = try decoder.container(keyedBy: CodingKeys.self)
-    print("aqui si")
-
-    do {
-        self.verifications = try container.decode([Verification].self, forKey: .ageVerificationResults)
-
-        if self.verifications == nil {
-            print("Decoding failed or key not found")
-        }
-
-      guard let first = verifications.first else {
-        print("you too young lol jk idky it error'd")
-        throw Error.noVerificationInResult
-      }
-      let firstVerification = self.verifications.first
-      self.firstVerification = firstVerification
-      return
-    } catch {
-        print("Error decoding verifications: \(error)")
+    self.verifications = try container.decode([Verification].self, forKey:.ageVerificationResults)
+    guard let first = verifications.first else {
+      throw Error.noVerificationInResult
     }
-
-    self.verifications = []
-    self.firstVerification = nil
+    self.firstVerification = first
   }
 }
 

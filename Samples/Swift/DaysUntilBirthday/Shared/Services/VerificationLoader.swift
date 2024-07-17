@@ -50,15 +50,14 @@ final class VerificationLoader: ObservableObject {
   /// - note: Successful calls to this method will set the `verificationState` property of the
   /// `verifiedAgeViewModel` instance passed to the initializer.
   func verifyAccountDetails() {
-    let accountDetails: [GIDVerifiableAccountDetail] = [
-      GIDVerifiableAccountDetail(accountDetailType: .ageOver18)
-    ]
-
     guard let rootViewController = UIApplication.shared.windows.first?.rootViewController else {
       print("There is no root view controller!")
       return
     }
 
+    let accountDetails: [GIDVerifiableAccountDetail] = [
+      GIDVerifiableAccountDetail(accountDetailType: .ageOver18)
+    ]
     let verifyAccountDetail = GIDVerifyAccountDetail()
     verifyAccountDetail.verifyAccountDetails(accountDetails, presenting: rootViewController) {
       verifyResult, error in
@@ -67,26 +66,25 @@ final class VerificationLoader: ObservableObject {
         print("Error! \(String(describing: error))")
         return
       }
-      self.verifiedAgeViewModel.verificationState = .verified(verifyResult)
-
-      // fetch age verification here
-      self.verifiedAgeViewModel.ageVerificationStatus = self.fetchAgeVerificationSignal(verifyResult: verifyResult)
+      self.fetchAgeVerificationSignal(verifyResult: verifyResult)
     }
   }
 
   private var cancellable: AnyCancellable?
 
-  func fetchAgeVerificationSignal(verifyResult: GIDVerifiedAccountDetailResult) -> String {
+  func fetchAgeVerificationSignal(verifyResult: GIDVerifiedAccountDetailResult) {
     self.verificationPublisher(verifyResult: verifyResult) { publisher in
       self.cancellable = publisher.sink { completion in
         switch completion {
         case .finished:
           break
-        case . failure(let error):
-          print("there was an error")
+        case .failure(let error):
+          self.verification = Verification.noVerificationStatus
+          print("Error retrieving age verification: \(error)")
         }
       } receiveValue: { verification in
-        self.verification = verification
+        self.verifiedAgeViewModel.ageVerificationStatus = verification.statusString
+        self.verifiedAgeViewModel.verificationState = .verified(verifyResult)
       }
     }
   }
@@ -94,7 +92,7 @@ final class VerificationLoader: ObservableObject {
   private func createSession(verifyResult: GIDVerifiedAccountDetailResult,
                              completion: @escaping (Result<URLSession, Error>) -> Void) {
     guard let token = verifyResult.accessTokenString else {
-      print("could not create url session")
+      completion(.failure(.couldNotCreateURLSession))
       return
     }
     let configuration = URLSessionConfiguration.default
@@ -107,44 +105,39 @@ final class VerificationLoader: ObservableObject {
 
   func verificationPublisher(verifyResult: GIDVerifiedAccountDetailResult,
                              completion: @escaping (AnyPublisher<Verification, Error>) -> Void) {
-    createSession(verifyResult: verifyResult) { result in
+    createSession(verifyResult: verifyResult) { [weak self] result in
       switch result {
       case .success(let urlSession):
-        guard let request = self.request else {
-          print("no request")
-          return
+        guard let request = self?.request else {
+          return completion(Fail(error:.couldNotCreateURLRequest).eraseToAnyPublisher())
         }
         let verificationPublisher = urlSession.dataTaskPublisher(for: request)
           .tryMap { data, error -> Verification in
             let decoder = JSONDecoder()
-            do {
-              let verificationResponse = try decoder.decode(VerificationResponse.self, from: data)
-              guard let firstVerification = verificationResponse.firstVerification else {
-                print("there is no firstVerification")
-                //throw Error.noVerificationInResult // Or a custom error
-              }
-              return firstVerification
-            } catch {
-              print("IM FINDING YOU: \(error)")
-            }
-            print("im still here") // never gets printed
-//            throw Error.noVerificationInResult
-            print ("there was no verification result")
+            let verificationResponse = try decoder.decode(VerificationResponse.self, from: data)
+            return verificationResponse.firstVerification
           }
           .mapError { error -> Error in
             guard let loaderError = error as? Error else {
-              print("there was loaderError")
-              //return Error.couldNotGetVerificationSignal(underlying: error)
+              return Error.couldNotFetchVerificationSignal(underlying: error)
             }
             return loaderError
           }
           .receive(on: DispatchQueue.main)
           .eraseToAnyPublisher()
         completion(verificationPublisher)
-      case .failure:
-        print("could not make session")
+      case .failure(let error):
+        completion(Fail(error: error).eraseToAnyPublisher())
       }
     }
+  }
+}
+
+extension VerificationLoader {
+  enum Error: Swift.Error {
+    case couldNotFetchVerificationSignal(underlying: Swift.Error)
+    case couldNotCreateURLRequest
+    case couldNotCreateURLSession
   }
 }
 

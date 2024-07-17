@@ -24,10 +24,10 @@ struct VerificationView: View {
     switch verifiedAgeViewModel.verificationState {
     case .verified(let result):
       VStack(alignment:.leading) {
-        Text("Account details verification status:")
+        Text("Age verification status:")
           .font(.headline)
 
-        Text("Age verified: \(verifiedAgeViewModel.ageVerificationStatus)")
+        Text("\(verifiedAgeViewModel.ageVerificationStatus)")
           .padding(.bottom)
 
         Text("List of result object properties:")

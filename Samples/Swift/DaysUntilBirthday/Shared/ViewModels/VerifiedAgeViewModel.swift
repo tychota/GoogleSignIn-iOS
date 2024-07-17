@@ -25,7 +25,7 @@ final class VerifiedAgeViewModel: ObservableObject {
   /// - note: This will publish updates when its value changes.
   @Published var verificationState: VerificationState
 
-  @Published var ageVerificationStatus = "Status Unavailable" // Default to pending
+  @Published var ageVerificationStatus: String
 
   private lazy var loader: VerificationLoader = {
     return VerificationLoader(verifiedViewAgeModel: self)
@@ -34,6 +34,7 @@ final class VerifiedAgeViewModel: ObservableObject {
   /// Creates an instance of this view model.
   init() {
     self.verificationState = .unverified
+    self.ageVerificationStatus = "Status Unavailable"
   }
 
   /// Verifies the user.
