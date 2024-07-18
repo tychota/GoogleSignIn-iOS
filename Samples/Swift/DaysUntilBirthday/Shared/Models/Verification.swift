@@ -17,41 +17,19 @@
 import Foundation
 
 struct Verification: Decodable {
-  let status: VerificationStatus
-  let statusString: String
+  let signal: String
 
   init(from decoder: Decoder) throws {
     let container = try decoder.singleValueContainer()
-    self.statusString = try container.decode(String.self)
-    guard let status = VerificationStatus(rawValue: statusString) else {
-        throw DecodingError.dataCorruptedError(
-            in: container,
-            debugDescription: "Invalid verification status: \(statusString)"
-        )
-    }
-    self.status = status
+    self.signal = try container.decode(String.self)
   }
 
-  init(status: Status) {
-    self.status = status.status
-    self.statusString = status.statusString
+  init(signal: String) {
+    self.signal = signal
   }
 
-  static var noVerificationStatus: Verification? {
-    return Verification(status: Status(status: VerificationStatus.agePending,
-                                       statusString: "AGE_PENDING"))
-  }
-
-  enum VerificationStatus: String, Decodable {
-      case agePending = "AGE_PENDING"
-      case ageOver18Standard = "AGE_OVER_18_STANDARD"
-  }
-}
-
-extension Verification {
-  struct Status: Decodable {
-    let status: VerificationStatus
-    let statusString: String
+  static var noVerificationSignal: Verification? {
+    return Verification(signal: "No signal found")
   }
 }
 

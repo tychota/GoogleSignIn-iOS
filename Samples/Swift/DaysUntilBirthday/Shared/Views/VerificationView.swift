@@ -27,7 +27,7 @@ struct VerificationView: View {
         Text("Age verification status:")
           .font(.headline)
 
-        Text("\(verifiedAgeViewModel.ageVerificationStatus)")
+        Text("\(verifiedAgeViewModel.ageVerificationSignal)")
           .padding(.bottom)
 
         Text("List of result object properties:")

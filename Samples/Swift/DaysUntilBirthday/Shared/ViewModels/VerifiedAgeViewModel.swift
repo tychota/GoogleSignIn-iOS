@@ -24,19 +24,20 @@ final class VerifiedAgeViewModel: ObservableObject {
   /// The user's account verification status.
   /// - note: This will publish updates when its value changes.
   @Published var verificationState: VerificationState
-
-  @Published var ageVerificationStatus: String
-
+  /// The age verification signal telling whether the user's age is over 18 or pending.
+  /// - note: This will publish updates when its value changes.
+  @Published var ageVerificationSignal: String
+  
   private lazy var loader: VerificationLoader = {
     return VerificationLoader(verifiedViewAgeModel: self)
   }()
-
+  
   /// Creates an instance of this view model.
   init() {
     self.verificationState = .unverified
-    self.ageVerificationStatus = "Status Unavailable"
+    self.ageVerificationSignal = "Signal Unavailable"
   }
-
+  
   /// Verifies the user's age is over 18.
   func verifyUserAgeOver18() {
     loader.verifyUserAgeOver18()
