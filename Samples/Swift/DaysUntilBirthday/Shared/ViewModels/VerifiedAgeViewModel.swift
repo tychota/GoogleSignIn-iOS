@@ -27,7 +27,13 @@ final class VerifiedAgeViewModel: ObservableObject {
   /// The age verification signal telling whether the user's age is over 18 or pending.
   /// - note: This will publish updates when its value changes.
   @Published var ageVerificationSignal: String
-  
+  /// Indicates whether the view to display the user's age is over 18 should be shown.
+  /// - note: This will publish updates when its value changes.
+  @Published var isShowingAgeVerificationSignal = false
+  /// Indicates whether an alert should be displayed to inform the user that they are not verified as over 18.
+  /// - note: This will publish updates when its value changes.
+  @Published var isShowingAgeVerificationAlert = false
+
   private lazy var loader: VerificationLoader = {
     return VerificationLoader(verifiedViewAgeModel: self)
   }()
@@ -36,11 +42,29 @@ final class VerifiedAgeViewModel: ObservableObject {
   init() {
     self.verificationState = .unverified
     self.ageVerificationSignal = "Signal Unavailable"
+    self.isShowingAgeVerificationSignal = false
+    self.isShowingAgeVerificationAlert = false
   }
   
   /// Verifies the user's age is over 18.
   func verifyUserAgeOver18() {
     loader.verifyUserAgeOver18()
+  }
+
+  /// Fetches the age verification signal representing whether the user's age is over 18 or pending.
+  func fetchAgeVerificationSignal(verifyResult: GIDVerifiedAccountDetailResult) {
+    loader.fetchAgeVerificationSignal(verifyResult: verifyResult) {
+      self.ageVerificationSignal =
+        self.loader.verification?.signal ?? "Error: No verification details found"
+      
+      if (self.ageVerificationSignal == "AGE_OVER_18_STANDARD"){
+        self.isShowingAgeVerificationSignal = true
+        self.isShowingAgeVerificationAlert = false
+      } else {
+        self.isShowingAgeVerificationSignal = false
+        self.isShowingAgeVerificationAlert = true
+      }
+    }
   }
 }
 

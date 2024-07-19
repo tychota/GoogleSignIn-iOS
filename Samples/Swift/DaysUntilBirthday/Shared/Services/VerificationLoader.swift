@@ -113,11 +113,7 @@ final class VerificationLoader: ObservableObject {
         print("Error! \(String(describing: error))")
         return
       }
-
-      self.fetchAgeVerificationSignal(verifyResult: verifyResult) {
-        self.verifiedAgeViewModel.ageVerificationSignal = self.verification?.signal ?? "No verification details found"
-        self.verifiedAgeViewModel.verificationState = .verified(verifyResult)
-      }
+      self.verifiedAgeViewModel.verificationState = .verified(verifyResult)
     }
   }
 
